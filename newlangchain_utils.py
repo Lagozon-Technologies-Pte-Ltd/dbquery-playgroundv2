@@ -303,8 +303,11 @@ def get_sql_db(selected_subject, mahindra_tables):
 def get_chain(question, _messages, selected_model, selected_subject, selected_database, table_details, selected_business_rule,question_type,relationships):
     if selected_database == 'GCP':
         prompt_file = "GCP_prompt.txt"
-    else:
+    elif selected_database == 'PostgreSQL-Azure':
         prompt_file = "Generic_postgres_prompt.txt" if question_type == "generic" else "Postgres_prompt.txt"
+    elif selected_database == 'Azure SQL':
+        print("prompt for azure is loaded!!")
+        prompt_file = "Generic_azure_prompt.txt" if question_type == "generic" else "Azure_prompt.txt"
     
     
     llm = AzureChatOpenAI(

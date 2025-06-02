@@ -729,7 +729,7 @@ async def submit_query(
     logger.info(f"Chat history: {chat_history}")
     try:
        # **Step 1: Invoke Unified Prompt**
-        prompts = getattr(request.app.state, "prompts", "None")
+        prompts = getattr(request.app.state, "prompts")
         current_question_type = getattr(request.app.state, "current_question_type", "generic")
         logger.info(f"Selected query type: {current_question_type}")
 
@@ -768,13 +768,8 @@ async def submit_query(
                 return JSONResponse(content=response_data)
             selected_business_rule= get_business_rule(intent = intent_result["intent"])
 
-
-
-      
-
-
         # For generic specific logic
-        if current_question_type == "generic":
+        elif current_question_type == "generic":
             tables_metadata = get_table_metadata(selected_subject=selected_subject)
             unified_prompt = prompts["unified_prompt"].format(
                 user_query=user_query,
@@ -926,6 +921,11 @@ async def read_root(request: Request):
     """
     # Extract table names dynamically
     tables = []
+    # Only set defaults if not already set
+    if not hasattr(app.state, "current_question_type"):
+        app.state.current_question_type = 'generic'
+        app.state.prompts = load_prompts("generic_prompt.yaml")
+
     # Pass dynamically populated dropdown options to the template
     return templates.TemplateResponse("index.html", {
         "request": request,
