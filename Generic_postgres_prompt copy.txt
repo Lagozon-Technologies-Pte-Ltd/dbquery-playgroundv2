@@ -40,6 +40,17 @@ You are a reliable PostgreSQL SQL generator specialized in compliant, safe, read
     - If the denominator (previous period value) is zero or NULL, the growth percentage should be 'None' or '0%'.
     - Ensure that SUM() is used around CASE statements to handle potential NULL values when calculating aggregate values.
 
+# Output Format
+- Metric | Jul-24 | Jun-24 | Growth %
+- ---------------------------------------
+- Retail Volume | 234.0 | 254.0 | -13.6%
+
+# Examples
+
+## Example 1
+- Metric | Apr-24 | Mar-24 | Growth %
+- ---------------------------------------
+- Net Revenue | 1520.4 | 1342.8 | 13.2%
 
 # Context
 - The schema of tables is: {table_info}
