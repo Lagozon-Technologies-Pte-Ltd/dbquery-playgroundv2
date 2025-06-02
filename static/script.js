@@ -13,7 +13,6 @@ window.onload = function () {
     let mediaRecorder = undefined;
     let audioChunks = [];
     let originalButtonHTML = "";
-
     console.log("Variables reset on page reload");
 };
 async function loadTableColumns(table_name) {
@@ -925,24 +924,31 @@ function closeinterpromptPopup() {
 // Function to handle question type change
 function handleQuestionTypeChange(event) {
     const questionType = event.target.value;
-    console.log("Selected question type:", questionType);
+    console.log(questionType);
+    // Step 1: Reset session first
+    fetch('/reset-session', { method: 'POST' })
+        .then(response => {
+            if (!response.ok) throw new Error('Session reset failed');
+            // Step 2: Now set the new question type
+            return fetch('/set-question-type', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question_type: questionType })
+            });
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("chat-messages").innerHTML = "";
+            // Clear and update tables container
+            document.getElementById("tables_container").innerHTML = "";
+            document.getElementById("xlsx-btn").innerHTML = ""; 
+            // Step 3: Optionally update UI or notify user
+            showToastMessage("Question type changed and session reset!", 'success');
 
-    // Send selected option to backend
-    fetch('/set-question-type', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ question_type: questionType })
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Optionally handle response or update UI
-        console.log("Backend response:", data);
-    })
-    .catch(error => {
-        console.error("Error sending question type:", error);
-    });
+        })
+        .catch(error => {
+            showToastMessage("Could not change question type. Try again.", 'error');
+        });
 }
 
 // Attach event listeners to all radio buttons with name="questionType"
